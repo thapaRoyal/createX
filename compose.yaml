@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: web
+    build:
+      context: ./web
+      dockerfile: web.dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    volumes:
+      - ./web:/app
+      - /app/node_modules:/app/node_modules
+    command: sh -c "yarn install && yarn dev"
+    depends_on:
+      - api
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: api.dockerfile
+    ports:
+      - 5000:5000
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres?schema=public
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+
+  db:
+    container_name: db
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

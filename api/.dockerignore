@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+.env              # Environment variables 
+*.log             # Log files
+*.ts              # TypeScript files, since only compiled JS is needed in the image
+.dockerignore
+.git
+.gitignore

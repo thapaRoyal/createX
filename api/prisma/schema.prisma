@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,15 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// user with id as an int autoincrement, name as string and email as string
+// Enum to define user roles
+enum UserRole {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+// User model with basic information, roles, and relationships
 model User {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  password       String
-  name           String?
-  role           String   @default("user")
-  isActive       Boolean  @default(true)
-  profilePicture String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id             String   @id @default(cuid()) // Unique identifier for each user
+  email          String   @unique // User's email (unique)
+  password       String // User's password
+  name           String? // Optional name for the user
+  role           UserRole @default(USER) // Default role is "USER"
+  isActive       Boolean  @default(true) // Flag to indicate if the user is active
+  profilePicture String? // Optional profile picture URL
+  createdAt      DateTime @default(now()) // Timestamp when the account was created
+  updatedAt      DateTime @updatedAt // Timestamp for the last update
+
+  // Relations
+  authProviders           OAuthProvider[] // External authentication providers linked to the user
+  hackathons              Hackathon[]     @relation("UserHackathons") // Hackathons created by the user
+  hackathonParticipations Hackathon[]     @relation("HackathonParticipants") // Hackathons the user participates in
+  Profile                 Profile?
+}
+
+// Profile model for user profile information
+model Profile {
+  id          String  @id @default(cuid()) // Unique ID for the profile
+  userId      String  @unique // Foreign key linking to the User
+  user        User    @relation(fields: [userId], references: [id]) // Relation to the user
+  bio         String? // Optional bio
+  avatarUrl   String? // Optional avatar URL
+  socialLinks Json? // Optional JSON field for social media links
+}
+
+// OAuthProvider model for external authentication (e.g., Google, GitHub)
+model OAuthProvider {
+  id           String  @id @default(cuid()) // Unique ID for each OAuth provider entry
+  provider     String // External provider (e.g., "google", "github")
+  providerId   String // Unique ID from the provider (e.g., Google user ID)
+  accessToken  String // Access token to interact with the provider's API
+  refreshToken String? // Optional refresh token
+  userId       String // Foreign key linking to the User
+  user         User    @relation(fields: [userId], references: [id]) // Relation to the User
+}
+
+// Hackathon model for hackathons created by users
+model Hackathon {
+  id           String   @id @default(cuid()) // Unique identifier for the hackathon
+  name         String // Name of the hackathon
+  description  String // Description of the hackathon
+  startDate    DateTime // Start date of the hackathon
+  endDate      DateTime // End date of the hackathon
+  organizerId  String // Foreign key for the organizer (creator of the hackathon)
+  organizer    User     @relation("UserHackathons", fields: [organizerId], references: [id]) // Relation to the user who created the hackathon
+  participants User[]   @relation("HackathonParticipants") // Many-to-many relation with users (participants)
+  createdAt    DateTime @default(now()) // Timestamp when the hackathon was created
 }

@@ -1,14 +1,14 @@
 # Use the latest Node.js image
 FROM node:20
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json files
-COPY package*.json ./
+# Copy package.json and yarn.lock files
+COPY package*.json yarn.lock ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies using Yarn
+RUN yarn install
 
 # Copy Prisma schema and generate Prisma client
 COPY prisma ./prisma
@@ -17,11 +17,8 @@ RUN npx prisma generate
 # Copy the rest of the application code
 COPY . .
 
-# Compile TypeScript code
-RUN npx tsc
-
-# Expose port 5000 for the application
+# Expose the application port
 EXPOSE 5000
 
-# Start the application using the compiled JavaScript file
-CMD ["yarn", "dev"]
+# Apply Prisma migrations during container startup
+CMD ["sh", "-c", "npx prisma migrate deploy && yarn dev"]

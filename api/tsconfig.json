@@ -9,7 +9,7 @@
     "outDir": "dist",          // Compiles output to 'dist' folder
     "rootDir": "src",           // Sets 'src' as the root directory for input files
     "moduleResolution": "node", // Allows Node.js module resolution
-    "resolveJsonModule": true   // Allows importing JSON files as modules
+    "resolveJsonModule": true,   // Allows importing JSON files as modules
   },
   "include": ["src/**/*"]
 }

@@ -9,10 +9,10 @@ services:
     ports:
       - 3000:3000
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/
     volumes:
       - ./web:/app
-      - ./web/node_modules:/app/node_modules
+      - /app/node_modules:/app/node_modules
     command: sh -c "yarn install && yarn dev"
     depends_on:
       - api
@@ -28,7 +28,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/createX?schema=public
     volumes:
       - ./api:/app
-      - ./api/node_modules:/app/node_modules
+      - /app/node_modules
 
   db:
     container_name: db

@@ -5,6 +5,9 @@ const api = axios.create({
   timeout: 10000,
 });
 
+console.warn(api);
+console.warn(process.env.NEXT_PUBLIC_API_URL);
+
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("accessToken");

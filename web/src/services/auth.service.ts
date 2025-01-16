@@ -6,7 +6,7 @@ export class AuthService {
     try {
       const response = await api.post("auth/login", payload);
       const { accessToken, refreshToken } = response.data;
-      this.saveToLocalStorage({ accessToken, refreshToken });
+      AuthService.saveToLocalStorage({ accessToken, refreshToken });
       return { accessToken, refreshToken };
     } catch (error) {
       console.error("Login failed", error);

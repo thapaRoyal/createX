@@ -4,14 +4,15 @@ import { LoginForm } from "@/components/login-form";
 import { AuthService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { Command } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const router = useRouter();
+
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-      console.warn("successfull login", data);
-      redirect("/dashboard");
+      router.push("/dashboard");
     },
     onError: (error) => {
       console.error("Login failed!", error);

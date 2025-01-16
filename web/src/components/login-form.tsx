@@ -32,7 +32,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Login with your Github or Google account
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,17 +1,11 @@
 "use client";
 
 import { LoginForm } from "@/components/login-form";
-import { AppDispatch, RootState } from "@/lib/store";
-import { loginUser } from "@/store/auth.store";
 import { Command } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const loading = useSelector((state: RootState) => state.auth.loading);
-
   const handleLogin = (email: string, password: string) => {
-    dispatch(loginUser({ email, password }));
+    console.warn(email, password);
   };
 
   return (

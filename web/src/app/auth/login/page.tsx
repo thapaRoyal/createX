@@ -1,11 +1,26 @@
 "use client";
 
 import { LoginForm } from "@/components/login-form";
+import { AuthService } from "@/services/auth.service";
+import { useMutation } from "@tanstack/react-query";
 import { Command } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const Login = () => {
+  const mutation = useMutation({
+    mutationFn: AuthService.login,
+    onSuccess: (data) => {
+      console.warn("successfull login", data);
+      redirect("/dashboard");
+    },
+    onError: (error) => {
+      console.error("Login failed!", error);
+    },
+  });
+
   const handleLogin = (email: string, password: string) => {
-    console.warn(email, password);
+    const payload: AuthPayload = { email, password };
+    mutation.mutate(payload);
   };
 
   return (

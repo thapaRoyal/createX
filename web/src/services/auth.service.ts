@@ -6,9 +6,7 @@ export class AuthService {
     try {
       const response = await api.post("auth/login", payload);
       const { accessToken, refreshToken } = response.data;
-      // Save the token to localStorage
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      this.saveToLocalStorage({ accessToken, refreshToken });
       return { accessToken, refreshToken };
     } catch (error) {
       console.error("Login failed", error);
@@ -40,5 +38,10 @@ export class AuthService {
     if (!token) return null;
 
     return JSON.parse(localStorage.getItem("user") || "{}"); // Simple user object retrieval from storage
+  }
+
+  static saveToLocalStorage(value: LoginResponse) {
+    localStorage.setItem("accessToken", value.accessToken);
+    localStorage.setItem("refreshToken", value.refreshToken);
   }
 }

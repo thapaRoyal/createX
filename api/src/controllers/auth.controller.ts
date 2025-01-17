@@ -57,8 +57,16 @@ export const loginUser = async (
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
 
-  // Send tokens to client
-  res.status(200).json({ accessToken, refreshToken });
+  // Set refresh token as an HttpOnly cookie
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+    sameSite: "strict", // Prevent CSRF
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Send only the accessToken in the response
+  res.status(200).json({ accessToken });
 };
 
 // Refresh token
@@ -67,7 +75,7 @@ export const refreshToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken; // Extract from cookie
 
   if (!refreshToken) {
     return next(new AppError("Refresh token is required", 400));

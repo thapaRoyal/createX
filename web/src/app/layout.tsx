@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/providers/auth.content-provider";
 import { TanStackprovider } from "@/providers/tanskack-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TanStackprovider>{children}</TanStackprovider>
+        <AuthProvider>
+          <TanStackprovider>{children}</TanStackprovider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/components/login-form";
+import { useAuth } from "@/providers/auth.content-provider";
 import { AuthService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { Command } from "lucide-react";
@@ -8,10 +9,12 @@ import { useRouter } from "next/navigation";
 
 const Login = () => {
   const router = useRouter();
+  const { updateAccessToken } = useAuth();
 
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
+      updateAccessToken(data.accessToken);
       router.push("/dashboard");
     },
     onError: (error) => {

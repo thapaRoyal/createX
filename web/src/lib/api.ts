@@ -25,8 +25,30 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle token expiration (401 Unauthorized)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    console.warn("isAuthEndpoint1", originalRequest);
+
+    const fullUrl = new URL(originalRequest.url, originalRequest.baseURL).href;
+
+    console.log("Original Request URL:", fullUrl);
+
+    // Check if the request is to the authentication endpoints
+    const isAuthEndpoint =
+      fullUrl.includes("/auth/login") ||
+      fullUrl.includes("/auth/refresh-token");
+
+    console.log("isAuthEndpoint:", isAuthEndpoint);
+
+    // For login requests, propagate the error without any retries
+    if (isAuthEndpoint && fullUrl.includes("/auth/login")) {
+      return Promise.reject(error); // Let login handle its own errors
+    }
+
+    // Handle token expiration (401 Unauthorized) for other endpoints
+    if (
+      error.response?.status === 401 &&
+      !isAuthEndpoint &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true; // Prevent infinite retry loop
       try {
         // Request a new access token using the refresh token
@@ -42,10 +64,11 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        window.location.href = "/login"; // Redirect to login on failure
+        window.location.href = "/auth/login"; // Redirect to login on refresh failure
       }
     }
 
+    // For all other errors, reject the promise
     return Promise.reject(error);
   }
 );

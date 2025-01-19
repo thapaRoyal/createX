@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/providers/auth.content-provider";
+import { AuthProvider } from "@/providers/auth.context-provider";
 import { TanStackprovider } from "@/providers/tanskack-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";

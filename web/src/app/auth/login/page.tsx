@@ -1,30 +1,15 @@
 "use client";
 
 import { LoginForm } from "@/components/login-form";
-import { useAuth } from "@/providers/auth.content-provider";
-import { AuthService } from "@/services/auth.service";
-import { useMutation } from "@tanstack/react-query";
+import { useLogin } from "@/hooks/use-login";
 import { Command } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const router = useRouter();
-  const { updateAccessToken } = useAuth();
+  const { handleLogin, isLoading, isError, error } = useLogin();
 
-  const mutation = useMutation({
-    mutationFn: AuthService.login,
-    onSuccess: (data) => {
-      updateAccessToken(data.accessToken);
-      router.push("/dashboard");
-    },
-    onError: (error) => {
-      console.error("Login failed!", error);
-    },
-  });
-
-  const handleLogin = (email: string, password: string) => {
+  const handleLoginSubmit = (email: string, password: string) => {
     const payload: AuthPayload = { email, password };
-    mutation.mutate(payload);
+    handleLogin(payload);
   };
 
   return (
@@ -36,7 +21,7 @@ const Login = () => {
           </div>
           create X
         </a>
-        <LoginForm onSubmit={handleLogin} />
+        <LoginForm onSubmit={handleLoginSubmit} />
       </div>
     </div>
   );

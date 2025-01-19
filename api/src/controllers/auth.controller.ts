@@ -42,31 +42,42 @@ export const loginUser = async (
 ) => {
   const { email, password } = req.body;
 
-  const user = await findUserByEmail(email);
-  if (!user) {
-    return next(new AppError("User not found", 404));
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return next(new AppError("User not found", 404));
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return next(new AppError("Incorrect password", 401));
+    }
+
+    // Generate tokens
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 minutes (or your desired access token expiry)
+    });
+
+    // Set refresh token as an HttpOnly cookie
+    res.cookie("access_token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send accessToken in the response
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    logger.error("Error during login", { email, error }); // Include email for tracing purposes
+    return next(new AppError("Login failed", 500));
   }
-
-  // Compare passwords
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-  if (!isPasswordCorrect) {
-    return next(new AppError("Incorrect password", 401));
-  }
-
-  // Generate tokens
-  const accessToken = generateAccessToken(user.id);
-  const refreshToken = generateRefreshToken(user.id);
-
-  // Set refresh token as an HttpOnly cookie
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-    sameSite: "strict", // Prevent CSRF
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
-  // Send only the accessToken in the response
-  res.status(200).json({ accessToken });
 };
 
 // Refresh token

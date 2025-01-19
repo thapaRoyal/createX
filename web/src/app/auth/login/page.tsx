@@ -21,7 +21,12 @@ const Login = () => {
           </div>
           create X
         </a>
-        <LoginForm onSubmit={handleLoginSubmit} />
+        <LoginForm
+          onSubmit={handleLoginSubmit}
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+        />
       </div>
     </div>
   );

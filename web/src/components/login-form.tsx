@@ -15,9 +15,17 @@ import { FaGithub, FaGoogle } from "react-icons/fa";
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void; // Parent callback to pass data
+  isLoading: boolean;
+  isError: boolean;
+  error: any;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({
+  onSubmit,
+  isLoading,
+  isError,
+  error,
+}: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -83,10 +91,21 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <span className="animate-spin mr-2">🌀</span> Loading...
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
               </div>
+              {isError && (
+                <div className="text-red-500 text-sm mt-1 text-center">
+                  {error?.message || "An error occurred. Please try again."}
+                </div>
+              )}
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <a href="#" className="underline underline-offset-4">
@@ -97,7 +116,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
           </form>
         </CardContent>
       </Card>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
+      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </div>

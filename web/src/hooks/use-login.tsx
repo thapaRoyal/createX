@@ -1,4 +1,3 @@
-// hooks/useLogin.ts
 import { useAuth } from "@/providers/auth.context-provider";
 import { AuthService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
@@ -16,9 +15,6 @@ export const useLogin = () => {
       // Store tokens in context (in memory)
       updateAccessToken(accessToken); // Set the access token in context
       router.push("/dashboard");
-    },
-    onError: (error) => {
-      console.error("Login failed!", error);
     },
   });
 

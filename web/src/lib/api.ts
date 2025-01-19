@@ -25,18 +25,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    console.warn("isAuthEndpoint1", originalRequest);
-
     const fullUrl = new URL(originalRequest.url, originalRequest.baseURL).href;
-
-    console.log("Original Request URL:", fullUrl);
 
     // Check if the request is to the authentication endpoints
     const isAuthEndpoint =
       fullUrl.includes("/auth/login") ||
       fullUrl.includes("/auth/refresh-token");
-
-    console.log("isAuthEndpoint:", isAuthEndpoint);
 
     // For login requests, propagate the error without any retries
     if (isAuthEndpoint && fullUrl.includes("/auth/login")) {

@@ -30,9 +30,20 @@ export const registerUser = async (
     // Create user using Prisma
     const user = await createUser(email, hashedPassword);
 
-    res
-      .status(201)
-      .json({ message: "User registered successfully", userId: user.id });
+    const accessToken = generateAccessToken(user.id);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 minutes (or your desired access token expiry)
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+      userId: user.id,
+      accessToken: accessToken,
+    });
   } catch (error) {
     logger.error("Error during registration", { error });
     return next(new AppError("Registration failed", 500));

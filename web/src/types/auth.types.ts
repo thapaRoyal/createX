@@ -6,6 +6,7 @@ interface LoginResponse {
 interface RegisterResponse {
   message: string;
   userId: any;
+  accessToken: string;
 }
 
 interface AuthPayload {

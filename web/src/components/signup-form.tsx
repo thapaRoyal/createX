@@ -14,19 +14,19 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
-interface LoginFormProps {
+interface SignupFormProps {
   onSubmit: (email: string, password: string) => void; // Parent callback to pass data
   isLoading: boolean;
   isError: boolean;
   error: any;
 }
 
-export function LoginForm({
+export function SignupForm({
   onSubmit,
   isLoading,
   isError,
   error,
-}: LoginFormProps) {
+}: SignupFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -41,7 +41,7 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Login with your Github or Google account
+            Signup with your Github or Google account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -50,11 +50,11 @@ export function LoginForm({
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
                   <FaGithub className="size-4 font-bold" />
-                  Login with Github
+                  Signup with Github
                 </Button>
                 <Button variant="outline" className="w-full">
                   <FaGoogle />
-                  Login with Google
+                  Signup with Google
                 </Button>
               </div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -77,12 +77,6 @@ export function LoginForm({
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
                   </div>
                   <Input
                     id="password"
@@ -98,7 +92,7 @@ export function LoginForm({
                       <span className="animate-spin mr-2">🌀</span> Loading...
                     </span>
                   ) : (
-                    "Login"
+                    "Signup"
                   )}
                 </Button>
               </div>
@@ -108,12 +102,12 @@ export function LoginForm({
                 </div>
               )}
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
+                Already have an account?{" "}
                 <Link
-                  href="/auth/signup"
+                  href="/auth/login"
                   className="underline underline-offset-4"
                 >
-                  Sign up
+                  Login
                 </Link>
               </div>
             </div>

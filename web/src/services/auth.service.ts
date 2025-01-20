@@ -15,11 +15,10 @@ export class AuthService {
   static async register(payload: AuthPayload): Promise<RegisterResponse> {
     try {
       const response = await api.post("auth/register", payload);
-      const { message, userId } = response.data;
-      return { message, userId };
-    } catch (error) {
-      console.error("Registration failed", error);
-      throw new Error("Registration failed");
+      const { message, userId, accessToken } = response.data;
+      return { message, userId, accessToken };
+    } catch (error: any) {
+      throw new Error(error.response.data.message, error);
     }
   }
 

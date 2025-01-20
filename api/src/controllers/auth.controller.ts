@@ -15,23 +15,28 @@ export const registerUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // Check if user already exists
-  const existingUser = await findUserByEmail(email);
-  if (existingUser) {
-    return next(new AppError("Email already in use", 400));
+    // Check if user already exists
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return next(new AppError("Email already in use", 400));
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user using Prisma
+    const user = await createUser(email, hashedPassword);
+
+    res
+      .status(201)
+      .json({ message: "User registered successfully", userId: user.id });
+  } catch (error) {
+    logger.error("Error during registration", { error });
+    return next(new AppError("Registration failed", 500));
   }
-
-  // Hash the password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Create user using Prisma
-  const user = await createUser(email, hashedPassword);
-
-  res
-    .status(201)
-    .json({ message: "User registered successfully", userId: user.id });
 };
 
 // User login
@@ -100,5 +105,32 @@ export const refreshToken = async (
   } catch (error) {
     logger.error(`Error in refresh token:`, { error });
     return next(new AppError("Invalid refresh token", 403));
+  }
+};
+
+// Logout user
+export const logoutUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Clear both access and refresh tokens
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    logger.error("Error during logout", { error });
+    next(new AppError("Logout failed", 500));
   }
 };

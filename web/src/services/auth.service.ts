@@ -22,4 +22,13 @@ export class AuthService {
       throw new Error("Registration failed");
     }
   }
+
+  static async logout(): Promise<void> {
+    try {
+      await api.post("auth/logout");
+    } catch (error) {
+      console.error("Logout failed", error);
+      throw new Error("Logout failed");
+    }
+  }
 }

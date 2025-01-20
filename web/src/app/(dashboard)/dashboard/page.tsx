@@ -1,7 +1,3 @@
-"use client";
-
-const Dashboard = () => {
-  return <div>Dashboard</div>;
-};
-
-export default Dashboard;
+export default function Page() {
+  return <div>This is a dashboard</div>;
+}

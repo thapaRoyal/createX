@@ -13,6 +13,7 @@ import {
   Settings2,
   Sparkles,
   Trash2,
+  Trophy,
 } from "lucide-react";
 import * as React from "react";
 
@@ -68,6 +69,11 @@ const data = {
       url: "#",
       icon: Inbox,
       badge: "10",
+    },
+    {
+      title: "Hackathons",
+      url: "/hackathons",
+      icon: Trophy,
     },
     {
       title: "Projects",

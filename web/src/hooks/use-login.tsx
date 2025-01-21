@@ -12,15 +12,18 @@ export const useLogin = () => {
     mutationFn: AuthService.login,
     onSuccess: (data) => {
       const { accessToken, user } = data;
-      // Store tokens in context (in memory)
       updateAccessToken(accessToken); // Set the access token in context
-
       router.push("/dashboard");
     },
   });
 
-  const handleLogin = (payload: AuthPayload) => {
-    mutation.mutate(payload);
+  const handleLogin = async (payload: AuthPayload) => {
+    try {
+      const result = await mutation.mutateAsync(payload); // Wait for the mutation to resolve
+      return result; // Return the result of the login mutation
+    } catch (error) {
+      throw error; // Throw the error to be handled by the caller
+    }
   };
 
   return {
@@ -28,5 +31,6 @@ export const useLogin = () => {
     isLoading: mutation.isPending,
     isError: mutation.isError,
     error: mutation.error,
+    data: mutation.data,
   };
 };

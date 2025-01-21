@@ -1,9 +1,15 @@
-export class userService {
-  static async getUser(payload: IUserPayload): Promise<IUser> {
+import api from "@/lib/api";
+
+export class UserService {
+  static async getUserDetails(payload: IUserPayload): Promise<IUser> {
     try {
-      //
+      const response = await api.get(`/user/${payload.userId}`);
+      return response.data;
     } catch (error: any) {
-      throw new Error(error.response.data.message, error);
+      console.error("Failed to fetch user details", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch user details"
+      );
     }
   }
 }

@@ -2,7 +2,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import authRoutes from "./routes/auth.routes";
+import authRoute from "./routes/auth.routes";
+import userRoute from "./routes/user.routes";
 import { errorHandler } from "./utils/error.handler";
 
 const app = express();
@@ -18,7 +19,8 @@ app.use(cookieParser());
 dotenv.config();
 
 // Register routes
-app.use("/api/auth", authRoutes);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/user", userRoute);
 
 // Error handling middleware
 app.use(errorHandler);

@@ -1,5 +1,6 @@
 import { AuthProvider } from "@/providers/auth.context-provider";
 import { TanStackprovider } from "@/providers/tanskack-provider";
+import { UserProvider } from "@/providers/user.context-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import React from "react";
@@ -32,7 +33,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <TanStackprovider>{children}</TanStackprovider>
+          <UserProvider>
+            <TanStackprovider>{children}</TanStackprovider>
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>

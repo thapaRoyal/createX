@@ -11,9 +11,10 @@ export const useLogin = () => {
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-      const { accessToken } = data;
+      const { accessToken, user } = data;
       // Store tokens in context (in memory)
       updateAccessToken(accessToken); // Set the access token in context
+
       router.push("/dashboard");
     },
   });

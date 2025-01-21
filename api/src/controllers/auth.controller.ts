@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
 import { createUser, findUserByEmail } from "../services/user.service";
+import { LoginResponse, RegisterResponse } from "../utils/auth.types.";
 import { AppError } from "../utils/error.handler";
 import {
   generateAccessToken,
@@ -12,7 +13,7 @@ import logger from "../utils/logger";
 // User registration
 export const registerUser = async (
   req: Request,
-  res: Response,
+  res: Response<RegisterResponse>,
   next: NextFunction
 ) => {
   try {
@@ -53,7 +54,7 @@ export const registerUser = async (
 // User login
 export const loginUser = async (
   req: Request,
-  res: Response,
+  res: Response<LoginResponse>,
   next: NextFunction
 ) => {
   const { email, password } = req.body;
@@ -89,7 +90,10 @@ export const loginUser = async (
     });
 
     // Send accessToken in the response
-    res.status(200).json({ accessToken });
+    res.status(200).json({
+      accessToken: accessToken,
+      user: { id: user.id, email: user.email },
+    });
   } catch (error) {
     logger.error("Error during login", { email, error }); // Include email for tracing purposes
     return next(new AppError("Login failed", 500));
@@ -112,7 +116,9 @@ export const refreshToken = async (
     const decoded = verifyRefreshToken(refreshToken);
     const accessToken = generateAccessToken(decoded.userId);
 
-    res.status(200).json({ accessToken });
+    res.status(200).json({
+      accessToken,
+    });
   } catch (error) {
     logger.error(`Error in refresh token:`, { error });
     return next(new AppError("Invalid refresh token", 403));

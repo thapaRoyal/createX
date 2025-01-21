@@ -4,9 +4,9 @@ export class AuthService {
   static async login(payload: AuthPayload): Promise<LoginResponse> {
     try {
       const response = await api.post("auth/login", payload);
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, user } = response.data;
 
-      return { accessToken, refreshToken };
+      return { accessToken, user };
     } catch (error: any) {
       throw new Error(error.response.data.message, error);
     }

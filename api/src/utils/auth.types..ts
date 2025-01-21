@@ -1,4 +1,4 @@
-interface LoginResponse {
+export interface LoginResponse {
   accessToken: string;
   refreshToken?: string;
   user: {
@@ -7,13 +7,8 @@ interface LoginResponse {
   };
 }
 
-interface RegisterResponse {
+export interface RegisterResponse {
   message: string;
-  userId: any;
+  userId: string;
   accessToken: string;
-}
-
-interface AuthPayload {
-  email: string;
-  password: string;
 }

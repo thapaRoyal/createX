@@ -5,17 +5,25 @@ import { useLogin } from "@/hooks/use-login";
 import { useGetuser } from "@/hooks/use-user";
 import { useUser } from "@/providers/user.context-provider";
 import { Command } from "lucide-react";
+import { useEffect } from "react";
 
 const Login = () => {
   const { handleLogin, isLoading, isError, error } = useLogin();
-  const { updateUser } = useUser();
+  const { updateUser }: any = useUser();
+
+  const { data: userData, refetch } = useGetuser();
+
+  useEffect(() => {
+    if (userData) {
+      updateUser(userData);
+    }
+  }, [userData, updateUser]);
 
   const handleLoginSubmit = async (email: string, password: string) => {
     const payload: AuthPayload = { email, password };
     try {
-      const response = await handleLogin(payload);
-      const { data } = useGetuser(response.user.id);
-      if (data) updateUser(data);
+      await handleLogin(payload);
+      refetch();
     } catch (error) {
       console.error(error);
     }

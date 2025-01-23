@@ -1,9 +1,9 @@
 import api from "@/lib/api";
 
 export class UserService {
-  static async getUserDetails(payload: IUserPayload): Promise<IUser> {
+  static async getUserDetails(): Promise<IUser> {
     try {
-      const response = await api.get(`/user/${payload.userId}`);
+      const response = await api.get("/user/profile");
       return response.data;
     } catch (error: any) {
       console.error("Failed to fetch user details", error);

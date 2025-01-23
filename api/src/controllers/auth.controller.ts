@@ -82,7 +82,7 @@ export const loginUser = async (
     });
 
     // Set refresh token as an HttpOnly cookie
-    res.cookie("access_token", refreshToken, {
+    res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -106,7 +106,7 @@ export const refreshToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const refreshToken = req.cookies.refreshToken; // Extract from cookie
+  const refreshToken = req.cookies.refresh_token; // Extract from cookie
 
   if (!refreshToken) {
     return next(new AppError("Refresh token is required", 400));

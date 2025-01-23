@@ -1,5 +1,3 @@
-// /utils/appError.ts
-
 import { NextFunction, Request, Response } from "express";
 
 // AppError Class

@@ -19,6 +19,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // Create the UserProvider component
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Method to update user data
   const updateUser = (userData: IUser | null) => {

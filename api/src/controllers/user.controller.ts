@@ -13,16 +13,13 @@ export const getUserDetails = async (
   res: Response<IUser>,
   next: NextFunction
 ) => {
-  const userId = req.params.userId;
-
+  const userId = req.userId;
   if (!userId) {
     return next(new AppError("User ID is required", 400));
   }
 
   try {
     const user = await findUserById(userId);
-
-    console.warn("user", user);
 
     if (!user) {
       return next(new AppError("User not found", 404));

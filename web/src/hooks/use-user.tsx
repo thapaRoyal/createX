@@ -1,12 +1,15 @@
 import { UserService } from "@/services/user.service";
 import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 
-export const useGetuser = (userId: string) => {
-  const { data, error, isLoading } = useQuery<IUser, Error>({
-    queryKey: ["user", userId],
-    queryFn: async () => UserService.getUserDetails({ userId }),
-    enabled: !!userId,
+export const useGetuser = () => {
+  const token = Cookies.get("access_token");
+
+  const { data, error, isLoading, refetch } = useQuery<IUser, Error>({
+    queryKey: ["user"],
+    queryFn: async () => UserService.getUserDetails(),
+    enabled: !!token,
   });
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, refetch };
 };

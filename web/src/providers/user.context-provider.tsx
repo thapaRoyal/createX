@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import { useGetuser } from "@/hooks/use-user";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 // Define the user context interface
 interface UserContextType {
@@ -19,9 +26,19 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // Create the UserProvider component
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
 
-  // Method to update user data
+  // Use the custom hook to fetch the user
+  const { data: fetchedUser } = useGetuser();
+  console.log("data", fetchedUser);
+
+  // Sync the fetched user with the context
+  useEffect(() => {
+    if (fetchedUser) {
+      setUser(fetchedUser); // Update user context
+    }
+  }, [fetchedUser]);
+
+  // Method to update user data manually
   const updateUser = (userData: IUser | null) => {
     setUser(userData);
   };

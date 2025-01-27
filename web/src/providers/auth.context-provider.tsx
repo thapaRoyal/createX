@@ -1,13 +1,7 @@
 "use client";
 
 import Cookies from "js-cookie";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 // Define the context interface
 interface AuthContextType {
@@ -26,18 +20,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Get access token from cookies when the app loads
-    const token = Cookies.get("access_token");
-    setAccessToken(token || null);
-  }, []);
-
   const updateAccessToken = (token: string | null) => {
     setAccessToken(token);
     if (token) {
-      Cookies.set("access_token", token, { expires: 7 }); // Persist token in cookies
+      Cookies.set("access_token", token, { expires: 7 });
     } else {
-      Cookies.remove("access_token"); // Remove token if logging out
+      Cookies.remove("access_token");
     }
   };
 

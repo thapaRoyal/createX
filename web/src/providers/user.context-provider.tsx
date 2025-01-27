@@ -29,7 +29,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   // Use the custom hook to fetch the user
   const { data: fetchedUser } = useGetuser();
-  console.log("data", fetchedUser);
 
   // Sync the fetched user with the context
   useEffect(() => {

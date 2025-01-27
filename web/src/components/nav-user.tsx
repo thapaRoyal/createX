@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/providers/auth.context-provider";
 import { useUser } from "@/providers/user.context-provider";
 import { AuthService } from "@/services/auth.service";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export function NavUser() {
@@ -36,10 +37,22 @@ export function NavUser() {
   const { user } = useUser();
 
   const router = useRouter();
-  const handleLogout = () => {
-    AuthService.logout();
-    updateAccessToken(null);
-    router.push("/auth/login");
+
+  const mutation = useMutation({
+    mutationFn: AuthService.logout,
+    onSuccess: (data) => {
+      updateAccessToken(null);
+      router.push("/auth/login");
+    },
+  });
+
+  const handleLogout = async () => {
+    try {
+      const result = await mutation.mutateAsync();
+      return result;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (

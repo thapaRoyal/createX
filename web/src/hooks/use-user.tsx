@@ -12,7 +12,5 @@ export const useGetuser = () => {
     enabled: !!token,
   });
 
-  console.log("data2", data);
-
   return { data, error, isLoading, refetch };
 };

@@ -1,18 +1,14 @@
-import { useAuth } from "@/providers/auth.context-provider";
 import { AuthService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 // Define the hook
 export const useLogin = () => {
-  const { updateAccessToken } = useAuth();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: AuthService.login,
-    onSuccess: (data) => {
-      const { accessToken } = data;
-      updateAccessToken(accessToken); // Set the access token in context
+    onSuccess: () => {
       router.push("/dashboard");
     },
   });

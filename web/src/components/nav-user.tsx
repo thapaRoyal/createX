@@ -25,23 +25,19 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/providers/auth.context-provider";
-import { useUser } from "@/providers/user.context-provider";
 import { AuthService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { updateAccessToken } = useAuth();
-  const { user } = useUser();
-
   const router = useRouter();
+
+  const user: any = [];
 
   const mutation = useMutation({
     mutationFn: AuthService.logout,
     onSuccess: (data) => {
-      updateAccessToken(null);
       router.push("/auth/login");
     },
   });

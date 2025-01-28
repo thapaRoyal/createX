@@ -2,28 +2,15 @@
 
 import { LoginForm } from "@/components/login-form";
 import { useLogin } from "@/hooks/use-login";
-import { useGetuser } from "@/hooks/use-user";
-import { useUser } from "@/providers/user.context-provider";
 import { Command } from "lucide-react";
-import { useEffect } from "react";
 
 const Login = () => {
   const { handleLogin, isLoading, isError, error } = useLogin();
-  const { updateUser }: any = useUser();
-
-  const { data: userData, refetch } = useGetuser();
-
-  useEffect(() => {
-    if (userData) {
-      updateUser(userData);
-    }
-  }, [userData, updateUser]);
 
   const handleLoginSubmit = async (email: string, password: string) => {
     const payload: AuthPayload = { email, password };
     try {
       await handleLogin(payload);
-      refetch();
     } catch (error) {
       console.error(error);
     }

@@ -13,6 +13,7 @@ api.interceptors.request.use(
   (config) => {
     // Attach access token to headers if available
     if (accessToken) {
+      console.log("Adding access token to request header:", accessToken);
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
@@ -21,7 +22,9 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
@@ -39,32 +42,52 @@ api.interceptors.response.use(
 
     // Handle token expiration (401 Unauthorized) for other endpoints
     if (
-      error.response?.status === 401 &&
-      !isAuthEndpoint &&
-      !originalRequest._retry
+      error.response?.status === 401 && // Unauthorized error
+      !isAuthEndpoint && // Exclude authentication endpoints
+      !originalRequest._retry // Prevent retrying the same request
     ) {
-      originalRequest._retry = true; // Prevent infinite retry loop
-      try {
-        // Request a new access token using the refresh token
-        const { data } = await axios.post(
-          "/auth/refresh-token",
-          {},
-          { withCredentials: true }
-        );
-        accessToken = data.accessToken; // Update access token in memory
+      console.log("401 error detected, attempting token refresh...");
 
-        // Retry the original request with the new access token
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest);
+      originalRequest._retry = true; // Prevent infinite retry loop
+
+      try {
+        // Check if the user is already being redirected to login
+        if (window.location.pathname !== "/auth/login") {
+          // Attempt to refresh the access token using the refresh token
+          const { data } = await api.post(
+            "/auth/refresh-token",
+            {},
+            { withCredentials: true }
+          );
+          console.log(
+            "Refresh token successful, new token received:",
+            data.accessToken
+          );
+
+          accessToken = data.accessToken; // Update access token in memory
+
+          // Retry the original request with the new access token
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return api(originalRequest);
+        } else {
+          console.log("Already on login page, not retrying request.");
+        }
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        window.location.href = "/auth/login"; // Redirect to login on refresh failure
+
+        // Redirect to login if the refresh token fails
+        if (window.location.pathname !== "/auth/login") {
+          console.log("Redirecting to login due to token refresh failure.");
+          window.location.href = "/auth/login"; // Redirect to login on refresh failure
+        }
+        return Promise.reject(refreshError); // Reject the refresh error
       }
     }
 
-    // For all other errors, reject the promise
+    // Reject all other errors
     return Promise.reject(error);
   }
 );
 
 export default api;
+// just try once when not logged in or token expired attempt for refresh token and try once and if not working then redirect to login page

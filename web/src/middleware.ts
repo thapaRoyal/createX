@@ -1,34 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("access_token")?.value; // Get the access token from cookies
-  const loginPage = "/auth/login"; // Path for the login page
+  const token = req.cookies.get("access_token")?.value;
+  const loginPage = "/auth/login";
   const currentPath = req.nextUrl.pathname;
 
-  // If the user is logged in (token exists)
-  if (token) {
-    // If the user tries to access the login page, redirect them to the dashboard or previous page
-    if (currentPath === loginPage) {
-      const referer = req.headers.get("referer") || "/dashboard"; // Default to "/dashboard" if no referer is available
-      return NextResponse.redirect(new URL(referer, req.url));
-    }
+  // List of protected routes (if needed, expand dynamically)
+  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
 
-    // If the user is logged in, allow access to other pages (no need to restrict them)
+  if (token) {
+    // Redirect logged-in users away from login page
+    if (currentPath.startsWith(loginPage)) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
     return NextResponse.next();
   }
 
-  // If the user is not logged in and trying to access protected routes, redirect to login page
-  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
+  // Redirect unauthorized users trying to access protected routes
   if (protectedRoutes.some((route) => currentPath.startsWith(route))) {
-    const loginUrl = new URL(loginPage, req.url);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL(loginPage, req.url));
   }
 
-  // Allow access if none of the conditions match
   return NextResponse.next();
 }
 
-// Specify the routes where the middleware will run
+// Apply middleware only to relevant paths
 export const config = {
   matcher: [
     "/dashboard/:path*",

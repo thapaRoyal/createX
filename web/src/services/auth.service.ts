@@ -25,7 +25,6 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       const res = await api.post("auth/logout");
-      console.log("res", res);
       return res.data;
     } catch (error) {
       console.error("Logout failed", error);

@@ -18,7 +18,9 @@ export function middleware(req: NextRequest) {
 
   // Redirect unauthorized users trying to access protected routes
   if (protectedRoutes.some((route) => currentPath.startsWith(route))) {
-    return NextResponse.redirect(new URL(loginPage, req.url));
+    if (currentPath !== loginPage) {
+      return NextResponse.redirect(new URL(loginPage, req.url));
+    }
   }
 
   return NextResponse.next();

@@ -22,72 +22,72 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    if (!originalRequest) return Promise.reject(error);
 
     const fullUrl = new URL(originalRequest.url, originalRequest.baseURL).href;
 
-    // Check if the request is to the authentication endpoints
+    console.log("Request failed:", error.response?.status, fullUrl);
+
+    // Check if request is to authentication endpoints
     const isAuthEndpoint =
       fullUrl.includes("/auth/login") ||
       fullUrl.includes("/auth/refresh-token");
 
-    // For login requests, propagate the error without any retries
+    // If login request fails, propagate the error
     if (isAuthEndpoint && fullUrl.includes("/auth/login")) {
-      return Promise.reject(error); // Let login handle its own errors
+      return Promise.reject(error);
     }
 
-    // Handle token expiration (401 Unauthorized) for other endpoints
+    // Handle 401 Unauthorized errors
     if (
-      error.response?.status === 401 && // Unauthorized error
-      !isAuthEndpoint && // Exclude authentication endpoints
-      !originalRequest._retry // Prevent retrying the same request
+      error.response?.status === 401 &&
+      !isAuthEndpoint &&
+      !originalRequest._retry // Prevent retry loops
     ) {
       console.log("401 error detected, attempting token refresh...");
 
-      originalRequest._retry = true; // Prevent infinite retry loop
+      originalRequest._retry = true; // Mark request as retried
+
+      // Check if already on login page
+      if (window.location.pathname === "/auth/login") {
+        console.log("Already on login page, not retrying request.");
+        return Promise.reject(error);
+      }
+
+      // If no access token, redirect immediately
+      if (!accessToken) {
+        console.log("No access token, redirecting to login.");
+        window.location.href = "/auth/login";
+        return Promise.reject(error);
+      }
 
       try {
-        // Check if the user is already being redirected to login
-        if (window.location.pathname !== "/auth/login") {
-          // Attempt to refresh the access token using the refresh token
-          const { data } = await api.post(
-            "/auth/refresh-token",
-            {},
-            { withCredentials: true }
-          );
-          console.log(
-            "Refresh token successful, new token received:",
-            data.accessToken
-          );
+        // Attempt to refresh token
+        const { data } = await api.post(
+          "/auth/refresh-token",
+          {},
+          { withCredentials: true }
+        );
+        console.log("Token refreshed successfully:", data.accessToken);
 
-          accessToken = data.accessToken; // Update access token in memory
+        accessToken = data.accessToken; // Update token
 
-          // Retry the original request with the new access token
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return api(originalRequest);
-        } else {
-          console.log("Already on login page, not retrying request.");
-        }
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return api(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-
-        // Redirect to login if the refresh token fails
-        if (window.location.pathname !== "/auth/login") {
-          console.log("Redirecting to login due to token refresh failure.");
-          window.location.href = "/auth/login"; // Redirect to login on refresh failure
-        }
-        return Promise.reject(refreshError); // Reject the refresh error
+        console.log("Redirecting to login due to refresh failure.");
+        window.location.href = "/auth/login";
+        return Promise.reject(refreshError);
       }
     }
 
-    // Reject all other errors
     return Promise.reject(error);
   }
 );
 
 export default api;
-// just try once when not logged in or token expired attempt for refresh token and try once and if not working then redirect to login page

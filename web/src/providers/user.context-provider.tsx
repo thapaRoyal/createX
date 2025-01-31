@@ -25,8 +25,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const { data: fetchedUser } = useGetuser();
 
-  console.log("data", fetchedUser);
-
   useEffect(() => {
     if (fetchedUser) {
       setUser(fetchedUser);
